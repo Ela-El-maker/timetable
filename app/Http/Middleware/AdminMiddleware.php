@@ -10,9 +10,9 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
+
         if (! $request->user() || $request->user()->role !== 'admin' || ! $request->user()->status) {
-            abort(403, 'Admins only.');
-        }
+
 
         return $next($request);
     }
