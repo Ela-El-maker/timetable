@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
-    <h1>User Login</h1>
-
+    <h1>Admin Login</h1>
 
     @if ($errors->any())
         <div>
@@ -15,7 +13,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login.attempt') }}">
+    <form method="POST" action="{{ route('admin.login.attempt') }}">
         @csrf
         <div>
             <label for="email">Email</label>

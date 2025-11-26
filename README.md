@@ -155,6 +155,31 @@ http://127.0.0.1:8000
 
 ---
 
+# 🔐 Multi-auth guards (users vs admins)
+
+Laravel authentication is configured with two session-based guards that share the same `users` provider (single table with a `role` column):
+
+- `web` — general users (`role = 'user'`)
+- `admin` — administrators (`role = 'admin'`)
+
+Login + redirect behavior
+
+- User login: `GET /login` → `POST /login` → redirects to the units form.
+- Admin login: `GET /admin/login` → `POST /admin/login` → redirects to the admin dashboard.
+- Logout endpoints are separated: `POST /logout` (user) and `POST /admin/logout` (admin).
+
+Protecting routes
+
+- Student pages: `Route::middleware(['auth:web', 'student'])->group(...)` keeps the existing student flow intact.
+- Admin pages: `Route::middleware(['auth:admin', 'admin'])->group(...)` gates the admin dashboard and CRUD screens.
+
+Using a single users table
+
+- Ensure each record has a `role` (`user` or `admin`) and an active `status` flag; both are enforced after login and in middleware.
+- If you prefer separate tables/models later, add an `admins` provider and point the `admin` guard at it; the route + middleware wiring stays the same.
+
+---
+
 # 🗂️ Routes Overview
 
 | Method | Route             | Description                       |
