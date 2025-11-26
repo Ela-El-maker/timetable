@@ -44,30 +44,6 @@ The system eliminates the need to manually scan through hundreds of timetable ro
 
 ---
 
-# 📦 Project Structure
-
-```
-
-app/
-├── Http/
-│    └── Controllers/
-│         ├── UploadController.php
-│         └── ExtractionController.php
-├── Services/
-│     └── TimetableParser.php
-resources/
-├── views/
-│    ├── upload.blade.php
-│    ├── enter_units.blade.php
-│    └── results.blade.php
-routes/
-└── web.php
-public/
-storage/
-
-```
-
----
 
 # 🧠 How the Extraction Algorithm Works
 
@@ -187,35 +163,6 @@ http://127.0.0.1:8000
 | POST   | /upload-timetable | Upload timetable file             |
 | GET    | /enter-units      | Units input form                  |
 | POST   | /extract          | Extract schedule and show results |
-
----
-
-# 🧩 Core Files Overview
-
-## ✔ `UploadController.php`
-
-Handles:
-
-* File validation
-* Storage
-* Redirect to unit input
-
-## ✔ `ExtractionController.php`
-
-Handles:
-
-* Parsing unit list
-* Calling parser service
-* Returning results
-
-## ✔ `TimetableParser.php`
-
-Responsible for:
-
-* Excel parsing
-* Matching unit codes
-* Finding date/time/room/campus
-* Returning structured results
 
 ---
 
