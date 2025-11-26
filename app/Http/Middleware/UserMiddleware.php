@@ -10,9 +10,10 @@ class UserMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user() || $request->user()->role !== 'user') {
-            abort(403, 'Students only.');
-        }
+
+        if (! $request->user() || $request->user()->role !== 'user' || ! $request->user()->status) {
+
+
 
         return $next($request);
     }

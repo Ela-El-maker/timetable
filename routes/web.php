@@ -9,10 +9,14 @@ use App\Http\Controllers\User\ScheduleController;
 use App\Http\Controllers\User\UnitInputController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', UnitInputController::class)->name('units.form');
-Route::post('/extract', [ScheduleController::class, 'store'])->name('units.extract');
 
-Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'student'])->group(function () {
+    Route::get('/', UnitInputController::class)->name('units.form');
+    Route::post('/extract', [ScheduleController::class, 'store'])->name('units.extract');
+});
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+
     Route::get('/', DashboardController::class)->name('dashboard');
 
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');

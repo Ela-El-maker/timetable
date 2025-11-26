@@ -21,9 +21,9 @@ class TimetableController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'file' => ['required', 'file'],
-            'semester' => ['nullable', 'string', 'max:255'],
-        ]);
+            'file' => ['required', 'file', 'mimes:xlsx,pdf', 'max:10240'],
+
+
 
         $path = $data['file']->store('timetables');
 
