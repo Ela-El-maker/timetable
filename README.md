@@ -1,60 +1,275 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📘 Exam Timetable Extraction System — Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based intelligent system that allows students to upload an exam timetable (Excel/PDF) and automatically extract their personalized exam schedule.
 
-## About Laravel
+The system eliminates the need to manually scan through hundreds of timetable rows by intelligently matching course/unit codes and returning the correct **Date**, **Time**, **Room**, and **Campus**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 🚀 Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### ✅ Student-Facing Features
+- Upload exam timetable (.xlsx, .xls, .pdf)
+- Enter multiple unit codes at once
+- Automatic extraction of:
+  - Exam Date
+  - Exam Time
+  - Exam Room
+  - Campus / Block
+- Multi-sheet timetable support
+- Clean results table
+- Export to PDF (optional)
+- Export to Excel (optional)
 
-## Learning Laravel
+### 🧠 Backend Features
+- Intelligent cell scanning (via Laravel Excel)
+- Fuzzy and strict matching for unit codes
+- Date/time/room extraction from header+row mapping
+- Sheet-based campus detection
+- Service class architecture (clean, maintainable)
+- Easily extendable for AI/OCR
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 🛠️ Tech Stack
 
-## Laravel Sponsors
+| Layer      | Technology |
+|------------|------------|
+| Backend    | Laravel 10+ |
+| Spreadsheet Processing | Laravel Excel (Maatwebsite) |
+| PDF Export | DOMPDF (optional) |
+| Frontend   | Blade (or Vue/React optional) |
+| Storage    | Local filesystem (S3 optional) |
+| Language   | PHP 8+ |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+# 📦 Project Structure
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
 
-## Contributing
+app/
+├── Http/
+│    └── Controllers/
+│         ├── UploadController.php
+│         └── ExtractionController.php
+├── Services/
+│     └── TimetableParser.php
+resources/
+├── views/
+│    ├── upload.blade.php
+│    ├── enter_units.blade.php
+│    └── results.blade.php
+routes/
+└── web.php
+public/
+storage/
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 🧠 How the Extraction Algorithm Works
 
-## Security Vulnerabilities
+### 1️⃣ User uploads timetable  
+Handled by `UploadController`.  
+File is stored under `/storage/app/timetables`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2️⃣ User enters units  
+Example:
+```
 
-## License
+ACS 413 A
+PHY 217 A
+ENG 098A
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# timetable
+````
+
+### 3️⃣ The Timetable Parser executes
+`TimetableParser.php`:
+
+- Loads Excel into a matrix.
+- Cleans text:
+  - Removes spaces  
+  - Converts to uppercase  
+- Searches for unit codes inside each cell.
+- Upon match:
+  - Extracts **Room** from first column of the row.
+  - Extracts **Date** from header row (row 0 or 1).
+  - Extracts **Time** from time row (row 2).
+  - Extracts **Campus** from sheet name.
+
+### 4️⃣ Returns structured result
+
+```json
+[
+  {
+    "unit": "ENG 112A",
+    "date": "09/12/2025",
+    "time": "3:00 PM – 5:00 PM",
+    "room": "LR12",
+    "campus": "ATHIRIVER"
+  }
+]
+````
+
+---
+
+# 📥 Installation Guide
+
+## 1. Clone the project
+
+```bash
+git clone https://github.com/Ela-El-maker/timetable.git
+cd exam-timetable-extractor
+```
+
+## 2. Install PHP dependencies
+
+```bash
+composer install
+```
+
+## 3. Install JS dependencies (optional)
+
+```bash
+npm install
+npm run dev
+```
+
+## 4. Configure `.env`
+
+```env
+APP_NAME="Timetable System"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=timetable
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Then generate the app key:
+
+```bash
+php artisan key:generate
+```
+
+## 5. Run migrations (optional)
+
+```bash
+php artisan migrate
+```
+
+## 6. Start the server
+
+```bash
+php artisan serve
+```
+
+Visit:
+
+```
+http://127.0.0.1:8000
+```
+
+---
+
+# 🗂️ Routes Overview
+
+| Method | Route             | Description                       |
+| ------ | ----------------- | --------------------------------- |
+| GET    | /                 | Upload form                       |
+| POST   | /upload-timetable | Upload timetable file             |
+| GET    | /enter-units      | Units input form                  |
+| POST   | /extract          | Extract schedule and show results |
+
+---
+
+# 🧩 Core Files Overview
+
+## ✔ `UploadController.php`
+
+Handles:
+
+* File validation
+* Storage
+* Redirect to unit input
+
+## ✔ `ExtractionController.php`
+
+Handles:
+
+* Parsing unit list
+* Calling parser service
+* Returning results
+
+## ✔ `TimetableParser.php`
+
+Responsible for:
+
+* Excel parsing
+* Matching unit codes
+* Finding date/time/room/campus
+* Returning structured results
+
+---
+
+# 📊 Example Output Table
+
+| Unit      | Date        | Time           | Room   | Campus    |
+| --------- | ----------- | -------------- | ------ | --------- |
+| ENG 098A  | 09 Dec 2025 | 3:00–5:00 PM   | LR12   | ATHIRIVER |
+| ACS 413 A | 11 Dec 2025 | 3:00–5:00 PM   | BCC3   | ATHIRIVER |
+| MAT 322A  | 09 Dec 2025 | 10:00–12:00 PM | ICT115 | ATHIRIVER |
+
+---
+
+# 🎯 Roadmap / Future Enhancements
+
+### 🔥 Phase 2 Features
+
+* PDF text + table extraction
+* AI OCR for scanned timetables
+* Student login + dashboard
+* Google Calendar export
+* Upload past timetables
+* Conflict detection (2 exams same time)
+* API version (for mobile app)
+
+### 📱 Phase 3 (Optional)
+
+* Flutter mobile app
+* Push notifications
+* Group scheduling (friends/classmates)
+
+---
+
+# 🤝 Contributing
+
+Pull requests are welcome!
+To contribute:
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Open a pull request
+
+---
+
+# 📄 License
+
+This project is open-sourced under the **MIT License**.
+
+---
+
+# 🙌 Author
+
+Built by **Felo Ela**
+A software solution designed to help students access exam details faster, easier, and smarter.
+
+
