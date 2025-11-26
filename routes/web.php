@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\TimetableController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\User\ScheduleController;
 use App\Http\Controllers\User\UnitInputController;
 use Illuminate\Support\Facades\Route;
@@ -32,3 +33,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/conflicts', [ConflictController::class, 'index'])->name('conflicts.index');
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
 });
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
