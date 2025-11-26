@@ -19,6 +19,7 @@ class AdminMiddleware
         $user = Auth::guard('admin')->user();
 
         if ($user->role !== 'admin' || ! $user->status) {
+       
             abort(403);
         }
 

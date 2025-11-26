@@ -12,6 +12,7 @@ class UserMiddleware
 {
     public function handle(Request $request, Closure $next): Response|RedirectResponse
     {
+
         if (! Auth::guard('web')->check()) {
             return redirect()->route('login');
         }
@@ -19,6 +20,7 @@ class UserMiddleware
         $user = Auth::guard('web')->user();
 
         if ($user->role !== 'user' || ! $user->status) {
+
             abort(403);
         }
 
