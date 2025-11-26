@@ -178,6 +178,12 @@ Using a single users table
 - Ensure each record has a `role` (`user` or `admin`) and an active `status` flag; both are enforced after login and in middleware.
 - If you prefer separate tables/models later, add an `admins` provider and point the `admin` guard at it; the route + middleware wiring stays the same.
 
+## 🗄️ Database considerations for multi-guard auth
+
+- **Single table, role column (current setup):** `database/migrations/2024_05_18_000003_add_role_and_status_to_users_table.php` adds `role` and `status` to `users`. Both `web` and `admin` guards use the same provider (`users`) and the middlewares/controllers enforce the expected role per guard.
+- **Seeded credentials for testing:** `php artisan migrate --seed` creates a student (`student@example.com` / `password`) and an admin (`admin@example.com` / `password`) so you can log in to each area immediately.
+- **Sessions + password resets:** The default `sessions` and `password_reset_tokens` tables work for both guards because guard context is stored in the session payload; no extra tables are required. Only add a separate `admins` table and provider if you want physical separation between admin and user records.
+
 ---
 
 # 🗂️ Routes Overview

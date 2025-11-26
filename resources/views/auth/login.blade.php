@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
     <h1>User Login</h1>
-
 
     @if ($errors->any())
         <div>
