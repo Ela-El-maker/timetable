@@ -23,7 +23,7 @@ class TimetableController extends Controller
         $data = $request->validate([
             'file' => ['required', 'file', 'mimes:xlsx,pdf', 'max:10240'],
 
-
+        ]);
 
         $path = $data['file']->store('timetables');
 
